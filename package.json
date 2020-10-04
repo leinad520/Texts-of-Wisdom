@@ -1,0 +1,15 @@
+{
+  "name": "text-of-wisdom",
+  "version": "1.0.0",
+  "description": "This will send daily texts from Ray Dalio's Principles to our subscribers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sam Hodak, Dan Kim",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "twilio": "^3.49.4"
+  }
+}
