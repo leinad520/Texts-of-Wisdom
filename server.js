@@ -16,21 +16,37 @@ const Numbers = require('twilio/lib/rest/Numbers');
 
 // create list of subscribers
 var phoneNumbers = [
-    '+16464013225', '+16466529920'
+    '+16464013225'
 ]
+// Sam Hodak: '+16466529920'
 
 // Set counter for order of messages sent
 let counter = 0;
 
 // Get quotes from text file, turn into array, and pass as argument into sendMessages function
+
 function getQuotes() {
-    fs.readFile('./dalio.txt', 'utf8', (err, data) => {
+    // Dalio
+    // fs.readFile('./dalio.txt', 'utf8', (err, data) => {
+    //     if (err) {
+    //         console.error(err)
+    //         return
+    //     }
+    //     let quotesArr = data.split('\n');
+    //     sendMessages(quotesArr);
+    // })
+
+    // Draper
+    fs.readFile('./draper.txt', 'utf8', (err, data) => {
         if (err) {
             console.error(err)
             return
         }
-        let quotesArr = data.split('\n');
-        sendMessages(quotesArr);
+        let quotesArrTwo = data.split('\n');
+        for (let i = 1; i < quotesArrTwo.length; i ++) {
+            quotesArrTwo.splice(i, 1)
+        }
+        sendMessages(quotesArrTwo);
     })
 }
 
@@ -41,13 +57,13 @@ function sendMessages(quotes) {
             from: '+12073053409',
             to: num
         })
-        .then(msg => console.log(msg))
+        // .then(msg => console.log(msg))
         .catch(err => console.error(err));
     });
     counter++;
 }
 
-cron.schedule('*/15 * * * * *', () => {
+cron.schedule('*/5 * * * * *', () => {
     getQuotes();
 })
 
