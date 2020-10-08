@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "node-cron": "^2.0.3",
     "twilio": "^3.49.4"
   }
 }
