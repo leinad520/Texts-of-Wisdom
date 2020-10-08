@@ -1,4 +1,4 @@
-# OVERVIEW
+# Overview
 
 This will send daily texts from Ray Dalio's Principles to our subscribers. Also working on a Tim Draper version.
 Decided to make this when Ray Dalio deprecated his daily Principles sent via sms.
