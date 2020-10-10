@@ -21,49 +21,55 @@ var phoneNumbers = [
 // Sam Hodak: '+16466529920'
 
 // Set counter for order of messages sent
-let counter = 0;
+let counter = {
+    dalio: 0,
+    draper: 0
+}
 
 // Get quotes from text file, turn into array, and pass as argument into sendMessages function
 
 function getQuotes() {
     // Dalio
-    // fs.readFile('./dalio.txt', 'utf8', (err, data) => {
-    //     if (err) {
-    //         console.error(err)
-    //         return
-    //     }
-    //     let quotesArr = data.split('\n');
-    //     sendMessages(quotesArr);
-    // })
-
-    // Draper
-    fs.readFile('./draper.txt', 'utf8', (err, data) => {
+    fs.readFile('./edited-dalio-text.txt', 'utf8', (err, data) => {
         if (err) {
             console.error(err)
             return
         }
-        let quotesArrTwo = data.split('\n');
-        for (let i = 1; i < quotesArrTwo.length; i ++) {
-            quotesArrTwo.splice(i, 1)
-        }
-        sendMessages(quotesArrTwo);
+        let quotesArr = data.split('\n');
+        sendMessages(quotesArr, 'dalio')
+
+        // Draper
+        fs.readFile('./draper.txt', 'utf8', (err, data) => {
+            if (err) {
+                console.error(err)
+                return
+            }
+            let quotesArrTwo = data.split('\n');
+            for (let i = 1; i < quotesArrTwo.length; i ++) {
+                quotesArrTwo.splice(i, 1)
+            }
+            sendMessages(quotesArrTwo, 'draper');
+    
+        })
+
     })
+
 }
 
-function sendMessages(quotes) {
+function sendMessages(quotes, author) {
     phoneNumbers.forEach(num => {
         client.messages.create({
-            body: quotes[counter],
+            body: quotes[counter[author]],
             from: '+12073053409',
             to: num
         })
         // .then(msg => console.log(msg))
         .catch(err => console.error(err));
     });
-    counter++;
+    counter[author]++;
 }
 
-cron.schedule('*/5 * * * * *', () => {
+cron.schedule('*/10 * * * * *', () => {
     getQuotes();
 })
 
