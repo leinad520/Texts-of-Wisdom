@@ -10,9 +10,53 @@ var cron = require('node-cron');
 
 // fs
 const fs = require('fs');
+// Twilio added
 const { send } = require('process');
 const Numbers = require('twilio/lib/rest/Numbers');
 
+// import db
+const db = require('./db.js');
+
+// Express server
+const express = require('express');
+const server = express();
+// Body parser to get body from post request
+var bodyParser = require('body-parser');
+var jsonParser = bodyParser.json();
+
+server.post('/quotes', jsonParser, (req, res) => {
+    let author = req.body.author;
+    let quotesArr = req.body.quotes;
+    db.insertQuotes(author, quotesArr, (err, dbRes) => {
+        if (err) res.status(500).json({err});
+        if (!err) res.status(200).json({message: `success inserting ${quotesArr.length} quotes`});
+    })
+})
+
+server.listen(process.env.SERVERPORT, () => {
+    console.log(`Server listening on port ${process.env.SERVERPORT}`);
+})
+
+// fs.readFile('./edited-dalio-text.txt', 'utf8', (err, data) => {
+//     if (err) {
+//         console.error(err)
+//         return
+//     }
+//     let quotesArr = data.split('\n');
+//     db.insertQuotes('Dalio', quotesArr);
+// });
+
+// fs.readFile('./draper.txt', 'utf8', (err, data) => {
+//     if (err) {
+//         console.error(err)
+//         return
+//     }
+//     let quotesArrTwo = data.split('\n');
+//     for (let i = 1; i < quotesArrTwo.length; i ++) {
+//         quotesArrTwo.splice(i, 1)
+//     }
+//     db.insertQuotes('Draper', quotesArrTwo);
+// })
 
 // create list of subscribers
 var phoneNumbers = [
@@ -36,30 +80,27 @@ function getQuotes() {
             return
         }
         let quotesArr = data.split('\n');
-        sendMessages(quotesArr, 'dalio')
-
-        // Draper
-        fs.readFile('./draper.txt', 'utf8', (err, data) => {
-            if (err) {
-                console.error(err)
-                return
-            }
-            let quotesArrTwo = data.split('\n');
-            for (let i = 1; i < quotesArrTwo.length; i ++) {
-                quotesArrTwo.splice(i, 1)
-            }
-            sendMessages(quotesArrTwo, 'draper');
-    
-        })
-
+        sendMessages(quotesArr, 'Dalio')
     })
-
+    
+    // Draper
+    fs.readFile('./draper.txt', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err)
+            return
+        }
+        let quotesArrTwo = data.split('\n');
+        for (let i = 1; i < quotesArrTwo.length; i ++) {
+            quotesArrTwo.splice(i, 1)
+        }
+        sendMessages(quotesArrTwo, 'Draper');
+    })
 }
 
 function sendMessages(quotes, author) {
     phoneNumbers.forEach(num => {
         client.messages.create({
-            body: quotes[counter[author]],
+            body: `${author === 'Dalio' ? `Principle of the day: ${quotes[counter[author]]}` : quotes[counter[author]]} - ${author}`,
             from: '+12073053409',
             to: num
         })
@@ -69,9 +110,9 @@ function sendMessages(quotes, author) {
     counter[author]++;
 }
 
-cron.schedule('*/10 * * * * *', () => {
-    getQuotes();
-})
+// cron.schedule('*/10 * * * * *', () => {
+//     getQuotes();
+// })
 
 
 /*
